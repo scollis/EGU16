@@ -107,7 +107,7 @@ status_list = os.listdir(st)
 filelist =   [f for f in all_files(idir)]
 
 good_files = [f for f in all_files(idir)
-               if (f.endswith(endswith) \
+               if (True \
                        and not(f.split('/')[-1]+'.status' in status_list))]
 
 print(len(good_files), len(filelist))
