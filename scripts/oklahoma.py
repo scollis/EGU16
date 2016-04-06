@@ -31,6 +31,9 @@ def do_grid_map_gates_to_grid(radar_fname):
         fh.write('READING' + radar_fname + ' \n')
         fh.close()
         radar = pyart.io.read(radar_fname)
+        if radar.latitude['data'] == 0.0:
+            radar.latitude['data'] = np.array([36.7408])
+            radar.longitude['data'] = np.array([-98.1275])
         fh = open(tf, 'w')
         fh.write('Calcs \n')
         fh.close()
@@ -46,10 +49,10 @@ def do_grid_map_gates_to_grid(radar_fname):
         radar.fields['rain_z']['long_name'] = 'rainfall_rate_from_z'
         radar.fields['rain_z']['valid_min'] = 0
         radar.fields['rain_z']['valid_max'] = 500
-        min_lat = 43
-        min_lon = -72
-        max_lon = -69
-        max_lat = 45
+        min_lat = 35
+        min_lon = -99
+        max_lon = -96
+        max_lat = 38
         fh = open(tf, 'w')
         fh.write('GRIDDING \n')
         fh.close()
@@ -69,12 +72,14 @@ def do_grid_map_gates_to_grid(radar_fname):
         myd.plot_ppi_map( 'rain_z', vmin = 0, vmax = 100,
                          resolution = 'h', max_lat = max_lat,
                          min_lat = min_lat, min_lon = min_lon, max_lon = max_lon)
+        print('here')
         m = myd.basemap
         m.drawparallels(np.arange(min_lat,max_lat, 1),labels=[1,0,0,0])
         m.drawmeridians(np.arange(min_lon,max_lon, 1),labels=[0,0,0,1])
         m.drawrivers()
         m.drawcounties()
         m.drawstates()
+        print('now here')
         plt.savefig(md+ 'radar_'+sstr+'.png')
         plt.close(fig)
         fig = plt.figure(figsize = [15,15])
@@ -107,8 +112,7 @@ status_list = os.listdir(st)
 filelist =   [f for f in all_files(idir)]
 
 good_files = [f for f in all_files(idir)
-               if (True \
-                       and not(f.split('/')[-1]+'.status' in status_list))]
+                if (True and not(f.split('/')[-1]+'.status' in status_list))]
 
 print(len(good_files), len(filelist))
 good = False
